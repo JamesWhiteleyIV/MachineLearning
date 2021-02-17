@@ -75,9 +75,9 @@ class Network(object):
 
 
     def feedforward(self, a):
-        """Return the output of the network if ``a`` is input."""
-        for b, w in zip(self.biases, self.weights):
-            a = sigmoid(np.dot(w, a)+b)
+        """Applies sigmoid equation to weights and biases"""
+        for bias, weight in zip(self.biases, self.weights):
+            a = sigmoid(np.dot(weight, a) + bias)
         return a
 
 
@@ -85,9 +85,9 @@ class Network(object):
         """Train the neural network using mini-batch stochastic gradient descent.  
 
         :param list training_data: list of (x, y) representing the training inputs and the desired outputs.
-        :param int epochs: number of epochs to train for.
+        :param int epochs: number of epochs to train for (iterations of training).
         :param int mini_batch_size: size of mini-batches to use when sampling.
-        :param float eta: learning rate.
+        :param float eta: learning rate. (eta is greek symbol which looks like an 'n')
         :param list test_data: (optional) If provided then the network will be evaluated against the test data 
             after each epoch, and partial progress printed out.  This is useful for tracking progress, 
             but slows things down substantially.
@@ -117,14 +117,14 @@ class Network(object):
         is the learning rate."""
         nabla_b = [np.zeros(b.shape) for b in self.biases]
         nabla_w = [np.zeros(w.shape) for w in self.weights]
+        
         for x, y in mini_batch:
             delta_nabla_b, delta_nabla_w = self.backprop(x, y)
-            nabla_b = [nb+dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
-            nabla_w = [nw+dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
-        self.weights = [w-(eta/len(mini_batch))*nw
-                        for w, nw in zip(self.weights, nabla_w)]
-        self.biases = [b-(eta/len(mini_batch))*nb
-                       for b, nb in zip(self.biases, nabla_b)]
+            nabla_b = [nb + dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
+            nabla_w = [nw + dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
+
+        self.weights = [w - (eta / len(mini_batch)) * nw for w, nw in zip(self.weights, nabla_w)]
+        self.biases = [b - (eta / len(mini_batch)) * nb for b, nb in zip(self.biases, nabla_b)]
 
 
     def backprop(self, x, y):
